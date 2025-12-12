@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Henry Yang | AI 賦能產品設計專家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* 設定全域字體 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1117; /* 深科技黑背景 */
+            color: #DCDCDC; /* 鈦銀色文字 */
+            min-height: 100vh;
+        }
+
+        /* 粒子背景 Canvas 設置 */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15; /* 增加科技感和層次感 */
+        }
+
+        /* 鈦銀色漸層樣式 */
+        .titanium-gradient-text {
+            /* 冷調藍銀色漸層 */
+            background: linear-gradient(90deg, #A8AADB 0%, #DCDCDC 50%, #A8AADB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .titanium-gradient-bg {
+            /* 較深的科技藍/灰漸層 */
+            background: linear-gradient(135deg, #1A202C 0%, #2D3748 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 程式碼執行按鈕樣式 */
+        .execute-button {
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #A8AADB, #DCDCDC) 1;
+            background: rgba(45, 55, 72, 0.4); /* 透明深灰背景 */
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px #A8AADB;
+            box-shadow: 0 0 10px rgba(168, 170, 219, 0.5);
+        }
+        .execute-button:hover {
+            background: rgba(168, 170, 219, 0.1);
+            box-shadow: 0 0 20px rgba(168, 170, 219, 0.8), 0 0 40px rgba(168, 170, 219, 0.4);
+        }
+
+        /* 飛船底部樣式 */
+        .spaceship-base {
+            background: linear-gradient(to top, #0D1117 0%, #1A202C 100%);
+            border-top: 5px solid;
+            border-image: linear-gradient(to right, #A8AADB, transparent, #A8AADB) 1;
+        }
+
+        /* 滾動條美化（僅在支持的瀏覽器中） */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0D1117; }
+        ::-webkit-scrollbar-thumb { background: #3a4252; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #50596b; }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 粒子背景 Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- 導航欄 (Navigation Bar) -->
+    <nav class="sticky top-0 z-50 p-4 bg-black bg-opacity-70 backdrop-blur-sm border-b border-gray-800">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#home" class="text-xl font-bold titanium-gradient-text">Henry Yang / AI Designer</a>
+            <div class="space-x-4 hidden md:flex">
+                <a href="#about" class="text-sm hover:text-cyan-400 transition">關於我</a>
+                <a href="#services" class="text-sm hover:text-cyan-400 transition">AI 解決方案</a>
+                <a href="#portfolio" class="text-sm hover:text-cyan-400 transition">作品集</a>
+                <a href="#blog" class="text-sm hover:text-cyan-400 transition">技術洞察</a>
+                <a href="#contact-cta" class="text-sm hover:text-cyan-400 transition">聯絡我</a>
+            </div>
+            <!-- Mobile Menu Placeholder -->
+        </div>
+    </nav>
+
+    <main class="relative z-10">
+        <!-- 區塊 1: 首頁 (Home) -->
+        <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center p-8 pt-20">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-4 titanium-gradient-text">
+                Product Designer // AI Empowered
+            </h1>
+            <p id="typewriter-text" class="text-xl md:text-3xl text-gray-300 font-light h-10 md:h-12"></p>
+            <script>
+                // Typewriter Effect Script
+                const target = document.getElementById('typewriter-text');
+                const phrases = [
+                    "虛實整合的造物者。", 
+                    "從零到一的產品塑型專家。", 
+                    "設計與工程的跨領域橋樑。",
+                    "用 AI 重新定義工業設計的未來。"
+                ];
+                let phraseIndex = 0;
+                let charIndex = 0;
+                let isDeleting = false;
+                let typingSpeed = 100;
+
+                function type() {
+                    const currentPhrase = phrases[phraseIndex];
+                    if (isDeleting) {
+                        target.textContent = currentPhrase.substring(0, charIndex - 1);
+                        charIndex--;
+                        typingSpeed = 50;
+                    } else {
+                        target.textContent = currentPhrase.substring(0, charIndex + 1);
+                        charIndex++;
+                        typingSpeed = 100;
+                    }
+
+                    if (!isDeleting && charIndex === currentPhrase.length) {
+                        isDeleting = true;
+                        typingSpeed = 2000; // 暫停 2 秒
+                    } else if (isDeleting && charIndex === 0) {
+                        isDeleting = false;
+                        phraseIndex = (phraseIndex + 1) % phrases.length;
+                        typingSpeed = 100;
+                    }
+
+                    setTimeout(type, typingSpeed);
+                }
+
+                document.addEventListener('DOMContentLoaded', type);
+            </script>
+            
+            <a href="https://linktr.ee/HenryYang_AI_Design" target="_blank" id="contact-cta"
+               class="execute-button mt-12 px-8 py-3 rounded-lg text-lg font-mono tracking-widest text-white uppercase transition duration-300 ease-in-out flex items-center">
+                <i class="fas fa-play mr-3"></i> EXECUTE_COMMAND('CONTACT_ME')
+            </a>
+        </section>
+
+        <!-- 區塊 2: 關於我 (About Me) -->
+        <section id="about" class="py-20 md:py-32 p-8 max-w-5xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center titanium-gradient-text">
+                // About Me
+            </h2>
+            <div class="titanium-gradient-bg rounded-xl p-8 md:p-12">
+                <h3 class="text-2xl font-semibold mb-4 text-cyan-300">
+                    跨越虛實的造物者：Henry Yang 創新產品設計師
+                </h3>
+                <p class="text-gray-300 leading-relaxed mb-6">
+                    我是 Henry Yang，一位專注於將頂尖 AI 創新思維與扎實工業設計工藝融合的產品設計師，擁有 1 年的專業從業資歷，但累積了橫跨多個領域的實戰經驗。我的專業不僅限於數位藍圖，更深植於真實世界的材質與形態掌握：從精準的產品素描、細膩的雕刻，到先進的 3D 打印技術，以及傳統的木工與金屬加工技藝，我精通將概念轉化為可觸摸的實體產品。
+                </p>
+                <p class="text-gray-300 leading-relaxed">
+                    在技術層面，我能流暢駕馭 **RhinoCEROS、Blender** 進行複雜的曲面建模與視覺化，並結合 **Creo(Pro/E)** 確保工程可行性。同時，**Adobe Creative Suite (Illustrator, Photoshop, InDesign)** 則是我塑造品牌形象與最終渲染的強大工具。我深信，在 AI 浪潮下，設計師的價值在於定義「好的問題」並快速迭代解決方案。我的目標是成為您最值得信賴的創新夥伴，共同打造下一個世代的標誌性產品。
+                </p>
+                
+                <h3 class="text-2xl font-semibold mt-10 mb-4 text-cyan-300">
+                    技術堆疊 (Tech Stack)
+                </h3>
+                <div class="flex flex-wrap gap-4">
+                    <span class="text-sm bg-gray-700 text-yellow-300 px-3 py-1 rounded-full font-mono">RhinoCEROS</span>
+                    <span class="text-sm bg-gray-700 text-yellow-300 px-3 py-1 rounded-full font-mono">Blender</span>
+                    <span class="text-sm bg-gray-700 text-yellow-300 px-3 py-1 rounded-full font-mono">Creo(Pro/E)</span>
+                    <span class="text-sm bg-gray-700 text-yellow-300 px-3 py-1 rounded-full font-mono">Illustrator</span>
+                    <span class="text-sm bg-gray-700 text-yellow-300 px-3 py-1 rounded-full font-mono">Photoshop</span>
+                    <span class="text-sm bg-gray-700 text-yellow-300 px-3 py-1 rounded-full font-mono">3D 打印</span>
+                    <span class="text-sm bg-gray-700 text-yellow-300 px-3 py-1 rounded-full font-mono">金屬加工</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊 3: AI 解決方案服務 (Services) -->
+        <section id="services" class="py-20 md:py-32 p-8 bg-[#151a23]">
+            <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center titanium-gradient-text">
+                // AI 解決方案服務
+            </h2>
+            <div class="max-w-5xl mx-auto titanium-gradient-bg rounded-xl p-8 md:p-12">
+                <h3 class="text-2xl font-semibold mb-4 text-cyan-300">
+                    AI 賦能設計：將產品願景轉化為市場影響力
+                </h3>
+                <p class="text-gray-300 leading-relaxed mb-8">
+                    我們的「工業設計提案」服務，是為尋求差異化與市場突破的企業量身打造的賦能解決方案。在 AI 技術的加持下，我們超越了傳統的設計限制，實現了效率與創新的雙重躍升。我們的提案不僅是設計圖，更是一份實現願景的藍圖，為您的產品注入前沿科技的生命力與無可取代的市場競爭力。
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- 服務卡片 1 -->
+                    <div class="p-6 rounded-lg bg-gray-700 bg-opacity-30 border border-cyan-700">
+                        <i class="fas fa-microchip text-3xl text-cyan-400 mb-3"></i>
+                        <h4 class="text-xl font-semibold mb-2">產品設計與企劃</h4>
+                        <p class="text-sm text-gray-400">從市場趨勢分析、用戶痛點挖掘到產品生命週期規劃，利用數據驅動的洞察力，確保產品具備強勁的商業邏輯。</p>
+                    </div>
+                    <!-- 服務卡片 2 -->
+                    <div class="p-6 rounded-lg bg-gray-700 bg-opacity-30 border border-cyan-700">
+                        <i class="fas fa-palette text-3xl text-cyan-400 mb-3"></i>
+                        <h4 class="text-xl font-semibold mb-2">造型設計</h4>
+                        <p class="text-sm text-gray-400">結合深厚的工藝基礎與 AI 快速迭代能力，創造具有視覺衝擊力、符合品牌識別度，且兼顧人體工學的產品造型。</p>
+                    </div>
+                    <!-- 服務卡片 3 -->
+                    <div class="p-6 rounded-lg bg-gray-700 bg-opacity-30 border border-cyan-700">
+                        <i class="fas fa-hand-pointer text-3xl text-cyan-400 mb-3"></i>
+                        <h4 class="text-xl font-semibold mb-2">互動裝置設計</h4>
+                        <p class="text-sm text-gray-400">專精於設計引人入勝的物理與數位互動體驗，提供完整的跨領域解決方案。</p>
+                    </div>
+                    <!-- 服務卡片 4 -->
+                    <div class="p-6 rounded-lg bg-gray-700 bg-opacity-30 border border-cyan-700">
+                        <i class="fas fa-tree text-3xl text-cyan-400 mb-3"></i>
+                        <h4 class="text-xl font-semibold mb-2">景觀體驗優化</h4>
+                        <p class="text-sm text-gray-400">通過對空間、光線、動線的精細規劃，結合 AI 數據分析，優化沉浸式體驗與心理感受。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊 4: 作品集 (Portfolio) - 簡化示範 -->
+        <section id="portfolio" class="py-20 md:py-32 p-8 max-w-7xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center titanium-gradient-text">
+                // 作品集 / 案例展示
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- 案例 1 -->
+                <div class="titanium-gradient-bg rounded-xl overflow-hidden shadow-xl hover:shadow-cyan-500/50 transition duration-300 cursor-pointer">
+                    <img src="https://placehold.co/600x400/1A202C/A8AADB?text=AI+輔助+產品造型" alt="AI 輔助產品造型" class="w-full h-48 object-cover opacity-80 transition duration-500 hover:opacity-100">
+                    <div class="p-6">
+                        <span class="text-xs font-mono text-cyan-400 bg-cyan-900 px-2 py-0.5 rounded-full mb-2 inline-block">PROJECT: R&D</span>
+                        <h3 class="text-xl font-semibold mb-2">AI 演化式原型機</h3>
+                        <p class="text-sm text-gray-400">利用生成模型快速探索百種造型變體，大幅縮短設計週期的案例。</p>
+                    </div>
+                </div>
+                <!-- 案例 2 -->
+                <div class="titanium-gradient-bg rounded-xl overflow-hidden shadow-xl hover:shadow-cyan-500/50 transition duration-300 cursor-pointer">
+                    <img src="https://placehold.co/600x400/1A202C/A8AADB?text=高精度+3D+打印+模型" alt="高精度 3D 打印模型" class="w-full h-48 object-cover opacity-80 transition duration-500 hover:opacity-100">
+                    <div class="p-6">
+                        <span class="text-xs font-mono text-cyan-400 bg-cyan-900 px-2 py-0.5 rounded-full mb-2 inline-block">MODELING: 3D</span>
+                        <h3 class="text-xl font-semibold mb-2">精密光固化產品模型</h3>
+                        <p class="text-sm text-gray-400">展示複雜內部結構與表面處理，用於功能性測試的高精度模型製作。</p>
+                    </div>
+                </div>
+                <!-- 案例 3 -->
+                <div class="titanium-gradient-bg rounded-xl overflow-hidden shadow-xl hover:shadow-cyan-500/50 transition duration-300 cursor-pointer">
+                    <img src="https://placehold.co/600x400/1A202C/A8AADB?text=互動裝置+UX" alt="互動裝置 UX" class="w-full h-48 object-cover opacity-80 transition duration-500 hover:opacity-100">
+                    <div class="p-6">
+                        <span class="text-xs font-mono text-cyan-400 bg-cyan-900 px-2 py-0.5 rounded-full mb-2 inline-block">EXPERIENCE: UX/UI</span>
+                        <h3 class="text-xl font-semibold mb-2">AI 導覽互動系統</h3>
+                        <p class="text-sm text-gray-400">博物館或商業空間的客製化互動裝置，提升用戶參與度的解決方案。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊 5: 技術部落格 / 知識嵌入 (Blog & Knowledge) -->
+        <section id="blog" class="py-20 md:py-32 p-8 bg-[#151a23]">
+            <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center titanium-gradient-text">
+                // 技術洞察 & 知識庫
+            </h2>
+            <div class="max-w-4xl mx-auto titanium-gradient-bg rounded-xl p-8 md:p-12 border border-cyan-800">
+                <div class="flex items-center space-x-4 mb-6">
+                    <i class="fas fa-shield-alt text-4xl text-yellow-400"></i>
+                    <h3 class="text-2xl font-semibold text-white">AI 賦能設計的保險與風險管理</h3>
+                </div>
+                <p class="text-gray-300 mb-4">
+                    在設計流程中導入 AI 工具，雖能大幅提升效率，但也帶來數據版權、模型偏差和產品責任等新型風險。本區塊提供專業見解，助您在擁抱 AI 創新的同時，建立穩健的風險防護網，確保設計提案在法律與商業層面的可行性。
+                </p>
+                <a href="https://henryyang.com/insurance-insights" target="_blank" class="text-cyan-400 hover:text-cyan-300 transition duration-300 flex items-center">
+                    <i class="fas fa-arrow-right mr-2 text-sm"></i> 深入了解風險防護策略
+                </a>
+            </div>
+        </section>
+        
+        <!-- 區塊 6: 聯絡我 (Contact) & Footer -->
+        <footer class="spaceship-base py-20 md:py-32 p-8 border-t-2 border-cyan-900">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center titanium-gradient-text">
+                    // 系統初始化完成：等待指令
+                </h2>
+
+                <!-- 聯絡 CTA (程式碼執行按鈕) -->
+                <div class="text-center mb-20">
+                    <a href="https://linktr.ee/HenryYang_AI_Design" target="_blank"
+                       class="execute-button text-xl px-10 py-4 rounded-xl font-mono tracking-widest text-white uppercase transition duration-300 ease-in-out">
+                        <i class="fas fa-paper-plane mr-3"></i> SEND_API_REQUEST('CONSULTATION')
+                    </a>
+                    <p class="mt-4 text-sm text-gray-500">API Endpoint: /v1/consultation/henryyang</p>
+                </div>
+
+
+                <!-- 開源貢獻 & 技術資源 (Side Projects) -->
+                <div class="mt-12 mb-20">
+                    <h3 class="text-2xl font-semibold mb-6 text-yellow-400 border-b border-gray-700 pb-2">
+                        [MODULE] 開源貢獻 & 技術資源
+                    </h3>
+                    <div class="space-y-4">
+                        <!-- 專案 1 -->
+                        <div class="flex items-start bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition">
+                            <i class="fab fa-github text-3xl text-green-400 mr-4 mt-1"></i>
+                            <div>
+                                <a href="https://lin.ee/PjwPO2D" target="_blank" class="text-xl font-semibold text-white hover:text-green-400 transition">
+                                    自動化接案客服機器人
+                                </a>
+                                <p class="text-gray-400 text-sm">
+                                    基於 Whisper 模型與 GPT-4，自動將錄音檔轉錄並生成條列式會議紀錄。
+                                </p>
+                            </div>
+                        </div>
+                        <!-- 專案 2 -->
+                        <div class="flex items-start bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition">
+                            <i class="fas fa-brain text-3xl text-purple-400 mr-4 mt-1"></i>
+                            <div>
+                                <a href="https://huggingface.co/spaces/alex/enterprise-rag-demo" target="_blank" class="text-xl font-semibold text-white hover:text-purple-400 transition">
+                                    企業專屬知識庫 Demo
+                                </a>
+                                <p class="text-gray-400 text-sm">
+                                    使用 LangChain 搭建的 RAG 系統，可上傳 PDF 並進行精準問答。
+                                </p>
+                            </div>
+                        </div>
+                        <!-- 專案 3 -->
+                        <div class="flex items-start bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition">
+                            <i class="fas fa-magic text-3xl text-pink-400 mr-4 mt-1"></i>
+                            <div>
+                                <a href="https://alex-ai-tools.com/prompt-gen" target="_blank" class="text-xl font-semibold text-white hover:text-pink-400 transition">
+                                    Midjourney 提示詞生成器
+                                </a>
+                                <p class="text-gray-400 text-sm">
+                                    專為設計師開發的輔助工具，快速生成高品質的藝術風格 Prompt。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 外部依賴庫 (Dependencies) - 社群連結 -->
+                <div class="mt-12 border-t border-gray-800 pt-8">
+                    <h3 class="text-xl font-mono text-cyan-500 mb-4">
+                        // EXTERNAL DEPENDENCIES (v1.0.2)
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="font-mono text-sm text-gray-500 hover:text-gray-300 transition duration-300">
+                            <span class="text-yellow-400">import</span> GitHub <span class="text-white">from</span> 'github.com/HenryYang_AI_Design' <span class="text-gray-600">// 專案開源</span>
+                            <a href="https://github.com/HenryYang_AI_Design" target="_blank" class="ml-2 text-cyan-600 hover:text-cyan-400"><i class="fab fa-github"></i></a>
+                        </div>
+                        <div class="font-mono text-sm text-gray-500 hover:text-gray-300 transition duration-300">
+                            <span class="text-yellow-400">import</span> LinkedIn <span class="text-white">from</span> 'linkedin.com/in/HenryYang_AI_Design' <span class="text-gray-600">// 專業網絡</span>
+                            <a href="https://linkedin.com/in/HenryYang_AI_Design" target="_blank" class="ml-2 text-cyan-600 hover:text-cyan-400"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-12 pt-8 border-t border-gray-800 text-gray-600 text-sm">
+                    &copy; 2025 Henry Yang. All Systems Operational.
+                </div>
+            </div>
+        </footer>
+    </main>
+    
+    <!-- 粒子背景 JS -->
+    <script>
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles;
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 50; i++) { // 減少粒子數量以維持極簡風格
+                particles.push(new Particle());
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function Particle() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.5; // 慢速移動
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.radius = Math.random() * 1 + 0.5; // 粒子更小
+            this.color = 'rgba(168, 170, 219, 0.8)'; // 冷調銀藍色
+        }
+
+        Particle.prototype.draw = function() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        };
+
+        Particle.prototype.update = function() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // 邊界反彈
+            if (this.x < 0 || this.x > width) this.vx *= -1;
+            if (this.y < 0 || this.y > height) this.vy *= -1;
+
+            this.draw();
+        };
+
+        function connectParticles() {
+            let maxDistance = 100; // 連線距離
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < maxDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(168, 170, 219, ${1 - distance / maxDistance})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, width, height);
+            
+            connectParticles();
+            particles.forEach(p => p.update());
+        }
+
+        // 等待 DOMContentLoaded 確保 Typewriter 效果也準備好
+        window.onload = function() {
+            animate();
+        };
+    </script>
+</body>
+</html>
